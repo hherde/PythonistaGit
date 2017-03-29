@@ -1,3 +1,5 @@
+### FORKED FROM omz/New from Gist.py
+
 ### Based on: https://gist.github.com/b0644f5ed1d94bd32805
 ### This version strips unicode characters from the downloaded script
 ### to work around the currently limited unicode support of the editor

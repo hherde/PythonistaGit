@@ -1,3 +1,5 @@
+### BASED ON mmcfre/Save-Script
+
 import console, sys, clipboard, datetime
 
 console.clear()
