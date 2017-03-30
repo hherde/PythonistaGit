@@ -11,9 +11,28 @@ def runStats( vals ):
   RMS = np.std( ar )
   return Max, Min, Range, Mean, RMS
 
+def runStatsNonzero( vals ):
+  ar = np.asarray( vals ).astype( np.float )
+  ar = ar[ np.nonzero( ar ) ] 
+  Max = np.amax( ar )
+  Min = np.amin( ar )
+  Range = Max - Min
+  Mean = np.mean( ar )
+  RMS = np.std( ar )
+  return Max, Min, Range, Mean, RMS
+
 def statReport( vals ):
   stats = runStats( vals )
   print ' Max: %.6f \n Min: %.6f \n Range: %.6f \n Mean: %.6f \n RMS: %.6f \n' % ( stats[ 0 ], stats[ 1 ], stats[ 2 ], stats[ 3 ], stats[ 4 ] )
+  stats = runStatsNonzero( vals )
+  print '---- (TRIMMED) ----\n Max: %.6f \n Min: %.6f \n Range: %.6f \n Mean: %.6f \n RMS: %.6f \n' % ( stats[ 0 ], stats[ 1 ], stats[ 2 ], stats[ 3 ], stats[ 4 ] )
+
+def calculateEfficiency( vals ):
+  ar = np.array( vals ).astype( np.float )
+  nSuccess = float( np.count_nonzero( ar ) )
+  nTotal = float( len( vals ) )
+  eff = ( nSuccess/nTotal )*100.00
+  print ' Efficiency = %.6f' % eff
 
 if sys.platform == 'ios': 
   import console, appex
@@ -69,6 +88,7 @@ for line in open( File, 'r' ):
 
 print '\nDependent variable analysis: \n'
 statReport( valY ) 
+calculateEfficiency( valY )
 print '\nPreparing plot...'
 
 if useTime: plt.plot( timestamp, valY, 'ro' )
