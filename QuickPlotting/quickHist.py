@@ -1,7 +1,8 @@
-### quickScatterXY.py
-# This script analyzes a CSV file to produce a scatter plot of the specified dependent vs indepent columns 
+### quickHist.py
+# This script analyzes a CSV file to produce a histogram of the specified column
 
 import numpy as np
+import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import shutil, os, sys 
 
@@ -59,60 +60,36 @@ with open( File, 'r' ) as f:
   print 'First line reads: ' + f.readline().strip()
   print 'Number of columns: ' + str( len( f.readline().strip().split( ',' ) ) )
 
-ts = raw_input( 'Analyze time stamp? (y/n)    ' ) 
-if ts == 'y' or ts == 'yes' or ts == 'Yes':
-  useTime = True
-  lineindex=0
-  timestamp = []
-  for line in open( File, 'r' ):
-    vals = line.split( ',' )
-    Hour = str( int( float( vals[ 0 ] ) ) )
-    Minute = str( int( float( vals[ 1 ] ) ) )
-    Second = str( float( float( vals[ 2 ] ) ) + float( vals[ 3 ] ) )
-    time = float( Hour )*60*60 + float( Minute )*60 + float( Second )
-    if lineindex == 0: starttime = time
-    time = time-starttime
-    lineindex = lineindex + 1
-    timestamp.append( time ) 
-  print 'Independent variable set to timestamp. \nTimestamp fills indices 0-3.'
-  
-else:  
-  useTime = False
-  X = int( raw_input( 'Independent variable column index: ' ) )
-Y = int( raw_input( 'Dependent variable column index: ' ) )
+X = int( raw_input( 'Independent variable column index: ' ) )
 
-if not useTime: valX = []
-valY = []
+valX = []
 
 for line in open( File, 'r' ):
 	l = line.split( ',' )
-	if not useTime: valX.append( l[ X ] )
-	valY.append( l[ Y ] )
+	valX.append( l[ X ] )
 
 print '\nDependent variable analysis: \n'
-statReport( valY ) 
-calculateEfficiency( valY )
+statReport( valX ) 
+calculateEfficiency( valX )
 
 print '\nPreparing plot...'
-bGrid = bool( raw_input( 'Grid the plots? (True/False)   ' ) )
+nbins = int( raw_input( 'How many bins?  ' ) )
+bNorm = bool( raw_input( 'Normalize? (True/False)  ' ) )
+
 plt.figure( 1 )
 plt.subplot( 211 )
-if useTime: 
-	plt.plot( timestamp, valY, 'ro' )
-	plt.xlabel( 'time [s]' )
-else: plt.plot( valX, valY, 'ro' )
-plt.grid( bGrid )
+aX = np.array( valX ).astype( np.float )
+n, bins, patches = plt.hist( aX, nbins, normed=bNorm, facecolor='green', alpha=0.75)
+# add a 'best fit' line
+y = mlab.normpdf( bins, runStats( valX )[ 3 ], runStats( valX )[ 4 ] )
+l = plt.plot( bins, y, 'r--', linewidth=1 )
+plt.grid( True )
 
 # Repeat plotting without the failed entries
 plt.subplot( 212 )
-aY = np.asarray( valY ).astype( np.float )
-if useTime:
-	aT = np.array( timestamp ).astype( np.float )
-	plt.plot( aT[ np.nonzero( aY ) ], aY[ np.nonzero( aY ) ], 'b-' )
-	plt.xlabel( 'time [s]' )
-else:
-	aX = np.array( valX ).astype( np.float )
-	plt.plot( aX[ np.nonzero( aY ) ], aY[ np.nonzero( aY ) ], 'b-' )
+n, bins, patches = plt.hist( aX[ np.nonzero( aX ) ], nbins, normed = bNorm )
+y = mlab.normpdf( bins, runStats( valX )[ 3 ], runStats( valX )[ 4 ] )
+l = plt.plot( bins, y, 'r--', linewidth=1 )
 plt.ylabel( 'Trimmed result' )
-plt.grid( bGrid )
-plt.show() 
+plt.grid( True ) 
+plt.show()
