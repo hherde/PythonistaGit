@@ -40,7 +40,8 @@ def calculateEfficiency( vals ):
 
 if sys.platform == 'ios': 
   import console, appex
-  console.clear()
+  bClearConsole = bool( raw_input( 'Clear console? (True/False)  ' ) )
+  if bClearConsole: console.clear()
   File = appex.get_file_path()
 elif sys.platform == 'darwin': 
   from optparse import OptionParser
@@ -77,6 +78,7 @@ nbins = int( raw_input( 'How many bins?  ' ) )
 bNorm = bool( raw_input( 'Normalize? (True/False)  ' ) )
 
 plt.figure( 1 )
+plt.clf()
 plt.subplot( 211 )
 aX = np.array( valX ).astype( np.float )
 n, bins, patches = plt.hist( aX, nbins, normed=bNorm, facecolor='green', alpha=0.75)

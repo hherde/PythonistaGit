@@ -39,7 +39,8 @@ def calculateEfficiency( vals ):
 
 if sys.platform == 'ios': 
   import console, appex
-  console.clear()
+  bClearConsole = bool( raw_input( 'Clear console? (True/False)  ' ) )
+  if bClearConsole: console.clear()
   File = appex.get_file_path()
 elif sys.platform == 'darwin': 
   from optparse import OptionParser
@@ -96,6 +97,7 @@ calculateEfficiency( valY )
 print '\nPreparing plot...'
 bGrid = bool( raw_input( 'Grid the plots? (True/False)   ' ) )
 plt.figure( 1 )
+plt.clf()
 plt.subplot( 211 )
 if useTime: 
 	plt.plot( timestamp, valY, 'ro' )
