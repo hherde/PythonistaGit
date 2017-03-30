@@ -39,8 +39,7 @@ def calculateEfficiency( vals ):
 
 if sys.platform == 'ios': 
   import console, appex
-  bClearConsole = bool( raw_input( 'Clear console? (True/False)  ' ) )
-  if bClearConsole: console.clear()
+  console.clear()
   File = appex.get_file_path()
 elif sys.platform == 'darwin': 
   from optparse import OptionParser
