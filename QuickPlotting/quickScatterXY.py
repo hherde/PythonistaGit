@@ -35,6 +35,7 @@ else:
 print( 'Input path: %s \n' % File )
 with open( File, 'r' ) as f: 
   print 'First line reads: ' + f.readline().strip()
+  print 'Number of columns: ' + str( len( f.readline().strip().split( ',' ) ) )
 
 ts = raw_input( 'Analyze time stamp? (y/n)    ' ) 
 if ts == 'y' or ts == 'yes' or ts == 'Yes':
@@ -51,7 +52,7 @@ if ts == 'y' or ts == 'yes' or ts == 'Yes':
     time = time-starttime
     lineindex = lineindex + 1
     timestamp.append( time ) 
-  print 'Independent variable set to timestamp. \nTimestamp fills indices 0-3.\n'
+  print 'Independent variable set to timestamp. \nTimestamp fills indices 0-3.'
   
 else:  
   useTime = False
