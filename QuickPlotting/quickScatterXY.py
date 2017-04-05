@@ -5,6 +5,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import shutil, os, sys 
 
+def setTimeUnits( timestamps ):
+	timer = []
+	timeUnits = str( raw_input( 'Plot time in seconds? Minutes? Hours? (s, m, h)   ') )
+	unitDEFN = { 'h': ( 60.0*60.0, 'hr' ) , 'm': ( 60.0, 'min' ), 's': ( 1.0, 'sec' ) }
+	conversion = unitDEFN[ timeUnits ][ 0 ]
+	for i in timestamp:
+		timer.append( i / conversion ) 
+	return timer, unitDEFN[ timeUnits ][ 1 ]
+
 def runStats( vals ):
   ar = np.asarray( vals ).astype( np.float )
   Max = np.amax( ar )
@@ -44,13 +53,13 @@ if sys.platform == 'ios':
 elif sys.platform == 'darwin': 
   from optparse import OptionParser
   parser = OptionParser()
-  parser.add_option( '-f', '--filename', dest = 'filename', action = 'store', type = 'string', default = 'enabled.csv', help = 'Supply filename' )
+  parser.add_option( '-f', '--filename', dest = 'filename', action = 'store', type = 'string', default = '', help = 'Supply filename' )
   ( options, args ) = parser.parse_args()
   File = options.filename
 else: 
   from optparse import OptionParser
   parser = OptionParser()
-  parser.add_option( '-f', '--filename', dest = 'filename', action = 'store', type = 'string', default = 'enabled.csv', help = 'Supply filename' )
+  parser.add_option( '-f', '--filename', dest = 'filename', action = 'store', type = 'string', default = '', help = 'Supply filename' )
   ( options, args ) = parser.parse_args()
   File = options.filename
   
@@ -62,19 +71,20 @@ with open( File, 'r' ) as f:
 ts = raw_input( 'Analyze time stamp? (y/n)    ' ) 
 if ts == 'y' or ts == 'yes' or ts == 'Yes':
   useTime = True
+  colIndex = int( raw_input( 'In which column does time data begin?    ' ) )
   lineindex=0
   timestamp = []
   for line in open( File, 'r' ):
     vals = line.split( ',' )
-    Hour = str( int( float( vals[ 0 ] ) ) )
-    Minute = str( int( float( vals[ 1 ] ) ) )
-    Second = str( float( float( vals[ 2 ] ) ) + float( vals[ 3 ] ) )
+    Hour = str( int( float( vals[ colIndex + 0 ] ) ) )
+    Minute = str( int( float( vals[ colIndex + 1 ] ) ) )
+    Second = str( float( float( vals[ colIndex + 2 ] ) ) + float( vals[ colIndex + 3 ] ) )
     time = float( Hour )*60*60 + float( Minute )*60 + float( Second )
     if lineindex == 0: starttime = time
     time = time-starttime
     lineindex = lineindex + 1
     timestamp.append( time ) 
-  print 'Independent variable set to timestamp. \nTimestamp fills indices 0-3.'
+  print 'Independent variable set to timestamp. \nTimestamp fills indices %d-%d.' % ( colIndex, colIndex + 3 )
   
 else:  
   useTime = False
@@ -99,8 +109,9 @@ plt.figure( 1 )
 plt.clf()
 plt.subplot( 211 )
 if useTime: 
-	plt.plot( timestamp, valY, 'ro' )
-	plt.xlabel( 'time [s]' )
+	( timer, tu ) = setTimeUnits( timestamp )
+	plt.plot( timer, valY, 'ro' )
+	plt.xlabel( 'time [%s]' % tu )
 else: plt.plot( valX, valY, 'ro' )
 plt.grid( bGrid )
 
@@ -108,9 +119,9 @@ plt.grid( bGrid )
 plt.subplot( 212 )
 aY = np.asarray( valY ).astype( np.float )
 if useTime:
-	aT = np.array( timestamp ).astype( np.float )
+	aT = np.array( timer ).astype( np.float )
 	plt.plot( aT[ np.nonzero( aY ) ], aY[ np.nonzero( aY ) ], 'b-' )
-	plt.xlabel( 'time [s]' )
+	plt.xlabel( 'time [%s]' % tu )
 else:
 	aX = np.array( valX ).astype( np.float )
 	plt.plot( aX[ np.nonzero( aY ) ], aY[ np.nonzero( aY ) ], 'b-' )
