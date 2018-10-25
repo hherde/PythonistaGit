@@ -40,8 +40,6 @@ def calculateEfficiency( vals ):
 
 if sys.platform == 'ios': 
   import console, appex
-  #bClearConsole = bool( raw_input( 'Clear console? (True/False)  ' )
-  #if bClearConsole: console.clear()
   File = appex.get_file_path()
 elif sys.platform == 'darwin': 
   from optparse import OptionParser
@@ -61,7 +59,7 @@ with open( File, 'r' ) as f:
   print 'First line reads: ' + f.readline().strip()
   print 'Number of columns: ' + str( len( f.readline().strip().split( ',' ) ) )
 
-X = int( raw_input( 'Independent variable column index: ' ) )
+X = int( raw_input( 'Variable column index: ' ) )
 
 valX = []
 
@@ -69,7 +67,7 @@ for line in open( File, 'r' ):
 	l = line.split( ',' )
 	valX.append( l[ X ] )
 
-print '\nDependent variable analysis: \n'
+print '\nVariable analysis: \n'
 statReport( valX ) 
 calculateEfficiency( valX )
 
